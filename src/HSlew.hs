@@ -8,8 +8,12 @@ See README for more info
 
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
-module HSlew where
+module HSlew (Design(..)
+             ,DesignConstraints(..)
+             ,design) where
 
 import Control.Parallel.Strategies
 import Control.Monad (join)
@@ -28,7 +32,8 @@ data Design = Design
   , gearModule :: Double
   , planetPositions :: [(Double,Double)]
   }
-  deriving (Show, Generic, NFData)
+  deriving stock (Show, Generic)
+deriving anyclass instance NFData Design
 
 data DesignConstraints = DesignConstraints
   { minSunDiam :: Double
@@ -43,6 +48,7 @@ data DesignConstraints = DesignConstraints
   , minDeltaRing :: Double
   }
 
+{-
 defDes = DesignConstraints { minSunDiam = 12
                            , maxNumTeeth = 100
                            , minNumTeeth = 11
@@ -53,7 +59,7 @@ defDes = DesignConstraints { minSunDiam = 12
                            , minRatio = 5000
                            , maxRatio = 6500
                            , minDeltaRing = 12}
-
+-}
 design :: DesignConstraints -> [Design]
 design dcs = let minSunTeeth = max (minNumTeeth dcs) (ceiling ((minSunDiam dcs) / (maxModule dcs))) :: Int
                  maxSunTeeth = min (floor ((maxDiam dcs) / (minModule dcs))) (maxNumTeeth dcs) :: Int
@@ -62,36 +68,36 @@ design dcs = let minSunTeeth = max (minNumTeeth dcs) (ceiling ((minSunDiam dcs) 
              -- we split the work on sun tooth count for parallelization
              -- could have split on other params equally.
   where
-    go dcs s = [Design
-                 { sunTeeth = s
-                 , planetTeeth = p
-                 , ringInnerTeeth = ri
-                 , ringOuterTeeth = ro
-                 , carrierTeeth   = c
-                 , ringDriveTeeth = rd
-                 , carrierDriveTeeth = cd
-                 , ratio = r
-                 , c2cDist = d
-                 , gearModule = m
-                 , planetPositions = pps
-                 }
-               | m <- steps (minModule dcs) (maxModule dcs) 10
-               , diam m s > minSunDiam dcs
-               , p <- [minNumTeeth dcs..maxNumTeeth dcs]
-               , diam m p > minPlanetDiam dcs
-               , let ri = s + 2 * p :: Int
-               , ro <- [fromIntegral(ceiling(fromIntegral ri+(minDeltaRing dcs / m)))..maxNumTeeth dcs]
-               , diam m ro < maxDiam dcs
-               , rd <- [minNumTeeth dcs..maxNumTeeth dcs]
-               , cd <- [minNumTeeth dcs..maxNumTeeth dcs]
-               , let d = (dist m rd ro)
-               , let c = rd + ro - cd
-               , c > 0
-               , let r = recip $ driveRatio rd ro cd c p s
-               , let r' = abs r in minRatio dcs < r' && r' < maxRatio dcs
-               -- hardcode three planets
-               , let pps = fmap (angleToPosition (fromIntegral (s + p) * m/2)) $ positionPlanets p s 3
-               ]
+    go dc s = [Design
+                { sunTeeth = s
+                , planetTeeth = p
+                , ringInnerTeeth = ri
+                , ringOuterTeeth = ro
+                , carrierTeeth   = c
+                , ringDriveTeeth = rd
+                , carrierDriveTeeth = cd
+                , ratio = r
+                , c2cDist = d
+                , gearModule = m
+                , planetPositions = pps
+                }
+              | m <- steps (minModule dc) (maxModule dc) 10
+              , diam m s > minSunDiam dc
+              , p <- [minNumTeeth dc..maxNumTeeth dc]
+              , diam m p > minPlanetDiam dc
+              , let ri = s + 2 * p :: Int
+              , ro <- [ceiling(fromIntegral ri+(minDeltaRing dc / m))..maxNumTeeth dc]
+              , diam m ro < maxDiam dc
+              , rd <- [minNumTeeth dc..maxNumTeeth dc]
+              , cd <- [minNumTeeth dc..maxNumTeeth dc]
+              , let d = (dist m rd ro)
+              , let c = rd + ro - cd
+              , c > 0
+              , let r = recip $ driveRatio rd ro cd c p s
+              , let r' = abs r in minRatio dc < r' && r' < maxRatio dc
+              -- hardcode three planets
+              , let pps = fmap (angleToPosition (fromIntegral (s + p) * m/2)) $ positionPlanets p s 3
+              ]
 
 steps :: Double -> Double -> Int -> [Double]
 steps lb ub n = [lb,lb+(ub-lb)/(fromIntegral n)..ub]
@@ -101,6 +107,7 @@ dist :: Double -> Int -> Int -> Double
 dist m t1 t2 = (fromIntegral (t1 + t2)*m)/2
 
 -- gear diameter
+diam :: Double -> Int -> Double
 diam m t = fromIntegral t * m
 
 -- Compute total drive ratio of differential arrangement
@@ -113,6 +120,7 @@ driveRatio rd ro cd c p s = ((ra * (fromIntegral cd / fromIntegral c))
             rb = -1 * (ri / fromIntegral s)
 
 -- https://woodgears.ca/gear/planetary.html
+angleBetweenPlanets :: Double -> Double -> Double
 angleBetweenPlanets p s = (2*pi) / (r + s)
     where r = 2 * p + s
 
@@ -124,7 +132,7 @@ angleToPosition rho theta = (rho * cos theta
 -- we instead place the planets at the nearest location to symmetric where the
 -- teeth line up properly
 positionPlanets :: Int -> Int -> Int -> [Double]
-positionPlanets p s numPlanets = fmap (\s -> fromIntegral s * alpha) (init [0,steps `div` numPlanets..steps])
+positionPlanets p s numPlanets = fmap (\x -> fromIntegral x * alpha) (init [0,step `div` numPlanets..step])
     where
-      steps = floor ((2*pi) / alpha)
+      step = floor ((2*pi) / alpha)
       alpha = angleBetweenPlanets (fromIntegral p) (fromIntegral s)

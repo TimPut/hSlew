@@ -1,16 +1,10 @@
-{-# OPTIONS -Wno-unused-top-binds #-}
-
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
 
 import HSlew
-
-import Control.Applicative ((<|>))
-import Data.Text (Text)
 import Toml (TomlCodec, (.=))
-
 import qualified Data.Text.IO as TIO
 import qualified Toml
 
