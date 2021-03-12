@@ -14,7 +14,10 @@ file, so if you enter unsatisfiable constraints such as minModule >=
 maxModule, hSlew may enter an infinite loop; if this happens CTRL-C to
 kill the process before reviewing the config and retrying.q
 
-``` $ ./hSlew ./test/config.toml ```
+If you've compiled and have the binary on $PATH then:
+``` $ hSlew ./path-to/config.toml ```
+or if you've just checked out the repo:
+``` $ cabal new-run hSlew ./path-to/config.toml ```
 
 # Design Usage
 TODO: give description of differential planetary gear set topology, and
