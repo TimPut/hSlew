@@ -9,7 +9,7 @@ gear system.
 hSlew take a path to a config file as it's only arguement. There is a
 sample config in './test'. It outputs one solution to the design
 constraints per line on stdout; I recommend piping the output into a
-log file. Nota bene: no validation is currently done on the config
+log file. Note: no validation is currently done on the config
 file, so if you enter unsatisfiable constraints such as minModule >=
 maxModule, hSlew may enter an infinite loop; if this happens CTRL-C to
 kill the process before reviewing the config and retrying.q
@@ -20,6 +20,7 @@ or if you've just checked out the repo:
 ``` $ cabal new-run hSlew ./path-to/config.toml ```
 
 # Annotated Example Config
+Note: in what follows "gear module" refers to the mechanical concept of module [wikipedia](https://en.wikipedia.org/wiki/Gear#Standard_pitches_and_the_module_system), and not the programming concept.
 
 ```
 # Sets the minimum diameter of the sun gear, this is useful because the sun gear,
@@ -62,7 +63,18 @@ maxRatio = 6500.0
 # Units are the same as those in the gear module parameter, typically mm.
 minDeltaRing = 12.0
 ```
-
+# Interpreting the Output
+Each line of output is simply the raw "show"ed Haskell data type.
+```
+Design {sunTeeth = 51, planetTeeth = 15, ringInnerTeeth = 81, ringOuterTeeth = 99, carrierTeeth = 120, ringDriveTeeth = 82, carrierDriveTeeth = 61, ratio = 5610.000000005102, c2cDist = 63.350000000000016, gearModule = 0.7000000000000002, planetPositions = [(23.100000000000005,0.0),(-11.549999999999997,20.005186827420538),(-11.550000000000013,-20.00518682742053)]}
+```
+In this sample output, most of the parameters should be self explanatory.
+c2cDist is the distance, in the same units as appear in the gear module,
+between the axis of the sun gear and the axis of the compound drive gear.
+The planets in this mechanism are in general *not* equally spaced around
+the sun! The last parameter of the output, planetPositions, is a list of 
+the (x,y) coords of the (currently hardcoded to 3) planets, in the same
+units as module again.
 # Design Usage
 TODO: give description of differential planetary gear set topology, and
 discussion of design considerations.
