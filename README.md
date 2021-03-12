@@ -22,3 +22,5 @@ or if you've just checked out the repo:
 # Design Usage
 TODO: give description of differential planetary gear set topology, and
 discussion of design considerations.
+
+![](./example.jpeg)
