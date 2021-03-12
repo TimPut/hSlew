@@ -7,6 +7,7 @@ import HSlew
 import Toml (TomlCodec, (.=))
 import qualified Data.Text.IO as TIO
 import qualified Toml
+import System.Environment (getArgs)
 
 configCodec :: TomlCodec DesignConstraints
 configCodec = DesignConstraints
@@ -23,9 +24,14 @@ configCodec = DesignConstraints
 
 main :: IO ()
 main = do
-    tomlRes <- Toml.decodeFileEither configCodec "./test/config.toml"
-    case tomlRes of
-        Left errs      -> TIO.putStrLn $ Toml.prettyTomlDecodeErrors errs
-        Right settings ->
-          putStr . unlines . fmap show $ design settings
+    args <- getArgs
+    case args of
+      []     -> putStrLn "no configuration file given"
+      (fp:_) -> do
+        tomlRes <- Toml.decodeFileEither configCodec fp
+    -- tomlRes <- Toml.decodeFileEither configCodec "./test/config.toml"
+        case tomlRes of
+          Left errs      -> TIO.putStrLn $ Toml.prettyTomlDecodeErrors errs
+          Right settings ->
+            putStr . unlines . fmap show $ design settings
     
