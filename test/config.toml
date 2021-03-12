@@ -1,10 +1,39 @@
+# Sets the minimum diameter of the sun gear, this is useful because the sun gear,
+# which is the output of the mechanism, may need to fit onto an existing shaft.
+# Units are the same as those in the gear module parameter, typically mm.
 minSunDiam = 12.0
+
+# Set min and max number of teeth on all of the components. a minimum is useful
+# since spur gears behave poorly with fewer than ~11 teeth. the maximum mostly
+# reduces the search space for a solution.
 maxNumTeeth = 100
 minNumTeeth = 11
+
+# Set range of gear module. For 3d printing, do some test prints to determine
+# the lowest gear module you are able to print accurately. Currently min and max
+# module must be distinct, so if you want a specific module, set the min to the
+# desired module, and max to a value very slightly larger, e.g. 0.5 and 0.50001.
+# this will produce near duplicate results in the output.
 minModule = 0.5
-maxModule = 2.0
+maxModule = 0.7
+
+# Allows you to enforce a minimum size for the planets to accomodate ball bearings.
+# Units are the same as those in the gear module parameter, typically mm.
 minPlanetDiam = 10.0
+
+# Sets a maximum size for all components. useful to ensure clearance near other
+# mechanisms and to ensure the design will fit on your print bed.
+# Units are the same as those in the gear module parameter, typically mm.
 maxDiam = 70.0
+
+# These set the range for the absolute value of the desired gear reduction ratio.
+# note that this mechanism is capable of producing negative (reversing) as well
+# as positive (non-reversing) ratios. There is currently no way to specify to hSlew
+# whether you want a reversing or non-reversing drive, but the output ratio is
+# signed to indicate that.
 minRatio = 5000.0
 maxRatio = 6500.0
+
+# Set minimum thickness for the floating ring gear.
+# Units are the same as those in the gear module parameter, typically mm.
 minDeltaRing = 12.0
