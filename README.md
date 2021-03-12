@@ -14,7 +14,7 @@ file, so if you enter unsatisfiable constraints such as minModule >=
 maxModule, hSlew may enter an infinite loop; if this happens CTRL-C to
 kill the process before reviewing the config and retrying.q
 
-''' $ ./hSlew ./test/config.toml '''
+``` $ ./hSlew ./test/config.toml ```
 
 # Design Usage
 TODO: give description of differential planetary gear set topology, and
