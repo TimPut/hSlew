@@ -8,6 +8,7 @@ import Toml (TomlCodec, (.=))
 import qualified Data.Text.IO as TIO
 import qualified Toml
 import System.Environment (getArgs)
+import Data.List (sortOn)
 
 configCodec :: TomlCodec DesignConstraints
 configCodec = DesignConstraints
@@ -33,5 +34,5 @@ main = do
         case tomlRes of
           Left errs      -> TIO.putStrLn $ Toml.prettyTomlDecodeErrors errs
           Right settings ->
-            putStr . unlines . fmap toScad $ design settings
+            putStr . unlines . fmap toScad . sortOn c2cDist $ design settings
     
