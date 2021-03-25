@@ -80,3 +80,8 @@ TODO: give description of differential planetary gear set topology, and
 discussion of design considerations.
 
 ![](./example.jpeg)
+
+## OpenSCAD
+To generate a differential drive with OpenSCAD, cut and paste one
+entry from the output of hSlew into the noted section of DiffDrive.scad
+![](./crushed.png)
