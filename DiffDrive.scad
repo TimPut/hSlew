@@ -9,23 +9,37 @@ postSize = 5;
 $fn=30;
 
 // From output of hSlew
-sunTeeth = 39;
-planetTeeth = 13;
-ringInner = 65;
-ringOuter = 86;
-carrierTeeth = 92;
-ringDrive = 17;
-carrierDrive = 11;
-ratio = -94.19047619047666;
-c2cDist = 66.95;
-mod = 1.3;
-ps = [[33.800000000000004,0.0],[-15.707643215079377,29.928413667078498],[-19.200588439513073,-27.81685466720559]];
-
+sunTeeth = 14;
+planetTeeth = 6;
+ringInner = 26;
+ringOuter = 33;
+carrierTeeth = 36;
+ringDrive = 10;
+carrierDrive = 7;
+ratio = -138.5999999999997;
+c2cDist = 86.0;
+mod = 4.0;
+ps = [[40.0,0.0],[-18.159619989581866,35.640260967534715],[-23.51141009169893,-32.36067977499789]];
 Sun();
 Ring();
 Planets();
 Carrier();
+Drive();
 
+module Drive(){
+  translate([c2cDist,0,0]){
+    difference(){
+      union(){
+        translate([0,0,h/2])gear_helix(z = ringDrive, m = mod, h = h, w_helix = wh, clearance = 0.01);
+        translate([0,0,-h/2])gear_helix(z = carrierDrive, m = mod, h = h, w_helix = wh, clearance = 0.01);
+      }
+      difference(){
+        cylinder(d=5+0.2,h=100,center=true);
+        translate([-10,2,-50])cube([100,100,100]);
+      }
+    }
+  }
+}
 module Sun(){
   difference(){
     translate([0,0,h/2])union(){
@@ -88,7 +102,7 @@ module Carrier(){
             cylinder(d=2.5,h=30,center=true); // tap drill for m3
           };
         };
-        cylinder(d=50,center=true,h=100); // Clearance for bearing cups
+        cylinder(d=34+6+1,center=true,h=100); // Clearance for bearing cups
       };
     };
   };
