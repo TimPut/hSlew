@@ -33,5 +33,5 @@ main = do
         case tomlRes of
           Left errs      -> TIO.putStrLn $ Toml.prettyTomlDecodeErrors errs
           Right settings ->
-            putStr . unlines . fmap show $ design settings
+            putStr . unlines . fmap toScad $ design settings
     

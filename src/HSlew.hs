@@ -13,7 +13,8 @@ See README for more info
 
 module HSlew (Design(..)
              ,DesignConstraints(..)
-             ,design) where
+             ,design
+             ,toScad) where
 
 import Control.Parallel.Strategies
 import Control.Monad (join)
@@ -34,6 +35,23 @@ data Design = Design
   }
   deriving stock (Show, Generic)
 deriving anyclass instance NFData Design
+
+toScad :: Design -> String
+toScad d = "sunTeeth = " ++ show (sunTeeth d) ++ ";\n"
+           ++ "planetTeeth = " ++ show (planetTeeth d) ++ ";\n"
+           ++ "ringInner = " ++ show (ringInnerTeeth d) ++ ";\n"
+           ++ "ringOuter = " ++ show (ringOuterTeeth d) ++ ";\n"
+           ++ "carrierTeeth = " ++ show (carrierTeeth d) ++ ";\n"
+           ++ "ringDrive = " ++ show (ringDriveTeeth d) ++ ";\n"
+           ++ "carrierDrive = " ++ show (carrierDriveTeeth d) ++ ";\n"
+           ++ "ratio = " ++ show (ratio d) ++ ";\n"
+           ++ "c2cDist = " ++ show (c2cDist d) ++ ";\n"
+           ++ "mod = " ++ show (gearModule d) ++ ";\n"
+           ++ "ps = " ++ (fmap brackets . show . planetPositions $ d) ++ ";\n"
+  where
+    brackets '(' = '['
+    brackets ')' = ']'
+    brackets c = c
 
 data DesignConstraints = DesignConstraints
   { minSunDiam :: Double
