@@ -99,7 +99,9 @@ design dcs = let minSunTeeth = max (minNumTeeth dcs) (ceiling ((minSunDiam dcs) 
                 , gearModule = m
                 , planetPositions = pps
                 }
-              | m <- steps (minModule dc) (maxModule dc) 10
+              | m <- if (minModule dc) == (maxModule dc)
+                    then [(minModule dc)]
+                    else steps (minModule dc) (maxModule dc) 10
               , diam m s > minSunDiam dc
               , p <- [minNumTeeth dc..maxNumTeeth dc]
               , diam m p > minPlanetDiam dc
