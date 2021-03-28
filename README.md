@@ -10,9 +10,9 @@ hSlew take a path to a config file as it's only arguement. There is a
 sample config in './test'. It outputs one solution to the design
 constraints per line on stdout; I recommend piping the output into a
 log file. Note: no validation is currently done on the config
-file, so if you enter unsatisfiable constraints such as minModule >=
-maxModule, hSlew may enter an infinite loop; if this happens CTRL-C to
-kill the process before reviewing the config and retrying.q
+file, so if you enter unsatisfiable constraints such as hSlew may misbehave.
+In particular it's picky about numeric types in the config; only tooth counts are
+integers, all other values MUST be entered with a decimal point.
 
 If you've compiled and have the binary on $PATH then:
 ``` $ hSlew ./path-to/config.toml ```
